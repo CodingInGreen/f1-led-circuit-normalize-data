@@ -12,8 +12,8 @@ struct Location {
 fn main() -> Result<(), Box<dyn Error>> {
     // Paths to the CSV files
     let first_csv_path = "zandvoort_data.csv";
-    let second_csv_path = "zandvoort_led_coordinates_new.csv";
-    let normalized_csv_path = "zandvoort_led_coordinates_normalized.csv";
+    let second_csv_path = "zandvoort_led_coordinates_new_from_kicad.csv";
+    let normalized_csv_path = "zandvoort_led_coordinates_normalized_check_for_inversion.csv";
 
     // Read the first dataset
     let mut first_rdr = Reader::from_path(first_csv_path)?;
@@ -31,10 +31,18 @@ fn main() -> Result<(), Box<dyn Error>> {
     let (x_min_second, x_max_second) = find_range(&second_locations, |loc| loc.x);
     let (y_min_second, y_max_second) = find_range(&second_locations, |loc| loc.y);
 
+    // Check if the y-coordinates are inverted
+    let y_inverted = (y_min_first < y_max_first) != (y_min_second < y_max_second);
+
     // Normalize the second dataset
     for loc in &mut second_locations {
         loc.x = normalize(loc.x, x_min_second, x_max_second, x_min_first, x_max_first);
         loc.y = normalize(loc.y, y_min_second, y_max_second, y_min_first, y_max_first);
+
+        // Correct the y-coordinate if they are inverted
+        if y_inverted {
+            loc.y = y_max_first + y_min_first - loc.y;
+        }
     }
 
     // Write the normalized second dataset to a new CSV file
