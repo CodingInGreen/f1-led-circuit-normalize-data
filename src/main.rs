@@ -12,7 +12,7 @@ struct Location {
 fn main() -> Result<(), Box<dyn Error>> {
     // Paths to the CSV files
     let first_csv_path = "zandvoort_data.csv";
-    let second_csv_path = "zandvoort_led_coordinates.csv";
+    let second_csv_path = "zandvoort_led_coordinates_new.csv";
     let normalized_csv_path = "zandvoort_led_coordinates_normalized.csv";
 
     // Read the first dataset
